@@ -1,9 +1,9 @@
-# Elysia with Bun runtime
+# FocusCoin Backend
 
 ## Getting Started
-To get started with this template, simply paste this command into your terminal:
+Install Bun locally:
 ```bash
-bun create elysia ./elysia-example
+curl https://bun.sh/install | bash
 ```
 
 ## Development
