@@ -3,12 +3,29 @@ import {PrismaClient} from "@prisma/client";
 const client = new PrismaClient();
 
 async function main() {
-    const john = await client.user.create({
-        data: {
-            name: "John Dough",
-            email: `john-${Math.random()}@example.com`,
+    const demoUser = await client.user.upsert({
+        where: {id: '1'},
+        update: {},
+        create: {
+            username: 'demo_user',
+            focuscoins: 100,
+            subscription: 'PREMIUM',
+            profile_picture_url: 'https://example.com/profile.jpg',
+            email: 'demo_user@example.com',
+            users_FK: {
+                create: {
+                    id: '1',
+                },
+            },
+            user_history: {
+                create: {
+                    operation: 'User created',
+                },
+            },
         },
     });
+
+    console.log('Demo user created:', demoUser);
 }
 
 main()
