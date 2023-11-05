@@ -10,8 +10,191 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserSubscription {
+  STARTER
+  PREMIUM
+}
+
+enum ProductTag {
+  DONATE
+  GENERAL_PRODUCTS
+  TOP_PICKS
+  SPECIAL_OFFERS
+}
+
+enum ProductType {
+  DIGITAL
+  HEALTH_AND_WELLNESS
+  TECHNOLOGY
+  NUTRITION
+  EVENT_TICKET
+  APPAREL
+}
+
+enum StatusFriendship {
+  REQUESTED
+  ACCEPTED
+  DECLINED
+  BLOCKED
+  FOLLOWING
+  FOLLOWED
+  NONE
+}
+
+enum SessionState {
+  WAITING
+  RUNNING
+  PAUSE
+  CANCELLED
+  PENDING
+  FINISHED
+}
+
+enum ParticipantState {
+  JOINED
+  FOCUSING
+  PAUSED
+  LEFT
+}
+
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id                  String           @id @map(name: "id")
+  username            String           @map(name: "username")
+  focuscoins          Int?
+  subscription        UserSubscription
+  profile_picture_url String
+  session_settings    Json?
+  email               String
+  users_FK            AuthUser         @relation("users_FK", fields: [id], references: id, onDelete: Cascade)
+  user_history        UserHistory[]
+
+  @@unique([username], name: "USER_username_key")
+  @@map(name: "USER")
+}
+
+model AuthUser {
+  id   String @id @map(name: "id")
+  user User?  @relation("users_FK")
+}
+
+model UserHistory {
+  id         Int      @id @default(autoincrement()) @map(name: "id")
+  new_data   User?    @relation(fields: [userId], references: [id])
+  operation  String?
+  changed_at DateTime @default(now())
+  userId     String?
+
+  @@map(name: "USER_HISTORY")
+}
+
+model UserProduct {
+  bought_at  DateTime @default(now())
+  user_id    String   @map(name: "user_id")
+  product_id String   @map(name: "product_id")
+
+  @@id([user_id, product_id], name: "USER_PRODUCT_pkey")
+  @@map(name: "USER_PRODUCT")
+}
+
+model Tag {
+  id  Int        @id @default(autoincrement()) @map(name: "id")
+  tag ProductTag @map(name: "tag")
+
+  @@map(name: "TAGS")
+}
+
+model Product {
+  id             Int              @id @default(autoincrement()) @map(name: "id")
+  price_coins    BigInt           @map(name: "price_coins")
+  price_usd      BigInt           @map(name: "price_usd")
+  title          String           @map(name: "title")
+  description    String?
+  reference_link String?
+  published_at   DateTime         @map(name: "published_at")
+  expires_at     DateTime?
+  amount         BigInt?
+  image_urls     String[]
+  type           ProductType      @map(name: "type")
+  ProductHistory ProductHistory[]
+
+  @@map(name: "PRODUCT")
+}
+
+model ProductHistory {
+  id         Int      @id @default(autoincrement()) @map(name: "id")
+  new_data   Product? @relation(fields: [productId], references: [id])
+  operation  String?
+  changed_at DateTime @default(now())
+  productId  Int?
+
+  @@map(name: "PRODUCT_HISTORY")
+}
+
+model ProductTags {
+  tag_id     Int    @map(name: "tag_id")
+  product_id String @map(name: "product_id")
+
+  @@id([tag_id, product_id], name: "PRODUCT_TAGS_pkey")
+  @@map(name: "PRODUCT_TAGS")
+}
+
+model Participant {
+  session_id         Int                  @id @default(autoincrement()) @map(name: "session_id")
+  user_id            String               @map(name: "user_id")
+  doubled            Boolean              @map(name: "doubled")
+  state              ParticipantState     @map(name: "state")
+  ParticipantHistory ParticipantHistory[]
+
+  @@map(name: "PARTICIPANT")
+}
+
+model ParticipantHistory {
+  id                    Int          @id @default(autoincrement()) @map(name: "id")
+  new_data              Participant? @relation(fields: [participantSession_id], references: [session_id])
+  operation             String?
+  changed_at            DateTime     @default(now())
+  participantSession_id Int?
+
+  @@map(name: "PARTICIPANT_HISTORY")
+}
+
+model Friendship {
+  user_id           String              @map(name: "user_id")
+  friend_id         String              @map(name: "friend_id")
+  status            StatusFriendship    @map(name: "status")
+  FriendshipHistory FriendshipHistory[]
+
+  @@id([user_id, friend_id], name: "FRIENDSHIP_pkey")
+  @@map(name: "FRIENDSHIP")
+}
+
+model FriendshipHistory {
+  id                  Int         @id @default(autoincrement()) @map(name: "id")
+  new_data            Friendship? @relation(fields: [friendshipUser_id, friendshipFriend_id], references: [user_id, friend_id])
+  operation           String?
+  changed_at          DateTime    @default(now())
+  friendshipUser_id   String?
+  friendshipFriend_id String?
+
+  @@map(name: "FRIENDSHIP_HISTORY")
+}
+
+model FocusSession {
+  id                  Int                   @id @default(autoincrement()) @map(name: "id")
+  session_settings    Json                  @map(name: "session_settings")
+  reward              BigInt                @map(name: "reward")
+  state               SessionState          @map(name: "state")
+  FocusSessionHistory FocusSessionHistory[]
+
+  @@map(name: "FOCUSSESSION")
+}
+
+model FocusSessionHistory {
+  id             Int           @id @default(autoincrement()) @map(name: "id")
+  new_data       FocusSession? @relation(fields: [focusSessionId], references: [id])
+  operation      String?
+  changed_at     DateTime      @default(now())
+  focusSessionId Int?
+
+  @@map(name: "FOCUSSESSION_HISTORY")
 }
