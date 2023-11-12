@@ -1,7 +1,9 @@
 import {Elysia} from "elysia";
+import {swagger} from '@elysiajs/swagger'
 import chalk from 'chalk';
 
 import fs from 'fs';
+import v1 from "./v1/group";
 
 const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'))
 
@@ -14,6 +16,12 @@ console.log("                                                                   
 console.log(chalk.blue(`FocusCoin API | https://focuscoinapp.com/ | Version: ${packageJson.version}`));
 console.log("");
 
-const app = new Elysia().get("/", () => "Hello FocusCoin").listen(3000);
+const app = new Elysia()
+    .use(swagger({
+        path: "/v1/swagger"
+    }))
+    .get("/", () => "FocusCoin API is Running...")
+    .use(v1)
+    .listen(3000);
 
 console.log(chalk.green(`🪙 FocusCoin API is running at ${app.server?.hostname}:${app.server?.port} \n`));
