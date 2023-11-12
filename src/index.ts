@@ -16,7 +16,6 @@ console.log("                                                                   
 console.log(chalk.blue(`FocusCoin API | https://focuscoinapp.com/ | Version: ${packageJson.version}`));
 console.log("");
 
-
 const app = new Elysia()
     // @ts-ignore
     .use(swagger({
