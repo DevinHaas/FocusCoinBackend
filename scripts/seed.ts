@@ -1,26 +1,47 @@
-import {PrismaClient} from "@prisma/client";
+import {PrismaClient, SessionState, TimeManagementTechnique, UserSubscription} from "@prisma/client";
 
 const client = new PrismaClient();
 
 async function main() {
     const demoUser = await client.user.upsert({
-        where: {id: '1'},
+        where: {id: 1},
         update: {},
         create: {
-            username: 'demo_user',
-            focuscoins: 100,
-            subscription: 'PREMIUM',
-            profile_picture_url: 'https://example.com/profile.jpg',
-            email: 'demo_user@example.com',
-            users_FK: {
+            clerk_id: 'user_1',
+            focuscoins: 150,
+            subscription: UserSubscription.STARTER,
+            session_settings: {
                 create: {
-                    id: '1',
+                    time_management_technique: TimeManagementTechnique.POMODORO,
+                    focus_time: 25,
+                    pause_time: 5,
+                    num_of_sessions: 4,
                 },
             },
-            user_history: {
-                create: {
-                    operation: 'User created',
-                },
+            focus_sessions: {
+                create: [
+                    {
+                        session_settings: {},
+                        reward: 50,
+                        state: SessionState.RUNNING,
+                        startedAt: new Date(),
+                        endedAt: new Date(),
+                    },
+                    {
+                        session_settings: {},
+                        reward: 30,
+                        state: SessionState.FINISHED,
+                        startedAt: new Date(),
+                        endedAt: new Date(),
+                    },
+                    {
+                        session_settings: {},
+                        reward: 20,
+                        state: SessionState.CANCELLED,
+                        startedAt: new Date(),
+                        endedAt: new Date(),
+                    },
+                ],
             },
         },
     });
