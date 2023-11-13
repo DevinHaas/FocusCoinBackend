@@ -1,4 +1,4 @@
-import {PrismaClient, SessionState, TimeManagementTechnique, UserSubscription} from "@prisma/client";
+import {PrismaClient, SessionState, UserSubscription} from "@prisma/client";
 
 const client = new PrismaClient();
 
@@ -10,14 +10,6 @@ async function main() {
             clerk_id: 'user_1',
             focuscoins: 150,
             subscription: UserSubscription.STARTER,
-            session_settings: {
-                create: {
-                    time_management_technique: TimeManagementTechnique.POMODORO,
-                    focus_time: 25,
-                    pause_time: 5,
-                    num_of_sessions: 4,
-                },
-            },
             focus_sessions: {
                 create: [
                     {

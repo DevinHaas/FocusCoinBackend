@@ -18,47 +18,29 @@ enum UserSubscription {
 enum SessionState {
   WAITING
   RUNNING
-  PAUSE
+  PAUSED
   CANCELLED
   PENDING
   FINISHED
 }
 
-enum TimeManagementTechnique {
-  POMODORO
-  SIMPLE
-  FLOWTIME
-  STOPWATCH
-}
-
 model User {
-  id               Int              @id @default(autoincrement())
-  clerk_id         String           @unique
-  focuscoins       BigInt
-  subscription     UserSubscription @default(STARTER)
-  session_settings SessionSettings? @relation(name: "UserSessionSettings")
-  focus_sessions   FocusSession[]   @relation(name: "UserFocusSessions")
+  id             Int              @id @default(autoincrement())
+  clerk_id       String           @unique
+  focuscoins     Int
+  subscription   UserSubscription @default(STARTER)
+  focus_sessions FocusSession[]   @relation(name: "UserFocusSessions")
 }
 
 model FocusSession {
   id               Int          @id @default(autoincrement())
-  user             User         @relation(fields: [user_id], references: [id], name: "UserFocusSessions")
-  user_id          Int
+  user             User         @relation(fields: [user_id], references: [clerk_id], name: "UserFocusSessions")
+  user_id          String
   session_settings Json
-  reward           BigInt
+  reward           Int
   state            SessionState
   startedAt        DateTime
   endedAt          DateTime
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
-}
-
-model SessionSettings {
-  id                        Int                     @id @default(autoincrement())
-  user                      User                    @relation(fields: [user_id], references: [id], name: "UserSessionSettings")
-  user_id                   Int                     @unique
-  time_management_technique TimeManagementTechnique @default(POMODORO)
-  focus_time                Int
-  pause_time                Int
-  num_of_sessions           Int
 }
