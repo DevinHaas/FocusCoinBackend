@@ -13,10 +13,10 @@ const users = new Elysia({prefix: 'users'})
             }
         };
     })
-    .get("/:id", async ({params}) => {
+    .get("/:clerk_id", async ({params}) => {
         const user = await prisma.user.findUnique({
             where: {
-                clerk_id: params.id,
+                clerk_id: params.clerk_id,
             },
         });
 
@@ -73,11 +73,11 @@ const users = new Elysia({prefix: 'users'})
         }
 
     })
-    .put("/:id", async ({params, body}) => {
+    .put("/:clerk_id", async ({params, body}) => {
         try {
             const updatedUser = await prisma.user.update({
                 where: {
-                    clerk_id: params.id,
+                    clerk_id: params.clerk_id,
                 },
                 data: body,
             });
@@ -98,10 +98,10 @@ const users = new Elysia({prefix: 'users'})
             };
         }
     })
-    .delete("/:id", async ({params}) => {
+    .delete("/:clerk_id", async ({params}) => {
         const user = await prisma.user.delete({
             where: {
-                clerk_id: params.id,
+                clerk_id: params.clerk_id,
             },
         });
 
