@@ -1,5 +1,6 @@
-import Elysia from "elysia";
-import { prisma } from "../../libs/prisma";
+import {Elysia, t} from "elysia";
+import {prisma} from "../../libs/prisma";
+import {UserSubscription} from "@prisma/client";
 
 const users = new Elysia({prefix: 'users'})
     .get("/", async () => {
@@ -35,11 +36,67 @@ const users = new Elysia({prefix: 'users'})
             },
         };
     })
+    .guard({
+        body: t.Object({
+            clerk_id: t.String(),
+            focuscoins: t.Number(),
+            subscription: t.Enum(UserSubscription),
+            focus_sessions: t.Object({})
+        })
+    })
     .post("/", async ({body}) => {
-        return body;
+        const {clerk_id} = body;
+        try {
+            const createdUser = await prisma.user.create({
+                data: {
+                    clerk_id,
+                    focuscoins: 0,
+                    subscription: UserSubscription.STARTER,
+                    focus_sessions: {}
+                }
+            })
+
+            return {
+                success: true,
+                message: "Created user",
+                data: {
+                    user: createdUser,
+                },
+            };
+        } catch (error) {
+            return {
+                status: 500,
+                success: false,
+                message: "Error creating user",
+                error: error,
+            };
+        }
+
     })
     .put("/:id", async ({params, body}) => {
-        return body;
+        try {
+            const updatedUser = await prisma.user.update({
+                where: {
+                    clerk_id: params.id,
+                },
+                data: body,
+            });
+
+            return {
+                success: true,
+                message: "Update user by ID",
+                data: {
+                    user: updatedUser,
+                },
+            };
+        } catch (error) {
+            return {
+                status: 500,
+                success: false,
+                message: "Error updating user",
+                error: error,
+            };
+        }
     })
     .delete("/:id", async ({params}) => {
         const user = await prisma.user.delete({
