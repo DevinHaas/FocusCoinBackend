@@ -9,77 +9,97 @@ const focusSessions = new Elysia({prefix: 'focus-sessions'})
         })
     })
     .post("/calculate-reward", async ({body}) => {
-        const {minutes} = body;
+            const {minutes} = body;
 
-        if (minutes > 90) {
-            return {
-                status: 400,
-                success: false,
-                message: "Minutes must be less than or equal to 90",
-            };
-        }
-
-        const coinsPerMinute = 0.25;
-
-        const rewardInCoins = Math.round(minutes * coinsPerMinute);
-
-        return {
-            success: true,
-            message: "Calculate reward in coins",
-            data: {
-                rewardInCoins,
-            },
-        };
-    })
-    .get("/", async () => {
-        const focusSessions = await prisma.focusSession.findMany();
-        return {
-            success: true,
-            message: "Fetch focus-sessions",
-            data: {
-                focusSessions,
+            if (minutes > 90) {
+                return {
+                    status: 400,
+                    success: false,
+                    message: "Minutes must be less than or equal to 90",
+                };
             }
-        };
-    })
-    .get("/:clerk_id", async ({params}) => {
-        const focusSession = await prisma.focusSession.findMany({
-            where: {
-                user_id: params.clerk_id,
-            },
-        });
 
-        return {
-            success: true,
-            message: "Fetch focus-sessions by user ID",
-            data: {
-                focusSession,
-            },
-        };
-    })
-    .get("/:clerk_id/:id", async ({params}) => {
-        const focusSession = await prisma.focusSession.findUnique({
-            where: {
-                user_id: params.clerk_id,
-                id: parseInt(params.id, 10),
-            },
-        });
+            const coinsPerMinute = 0.25;
 
-        if (!focusSession) {
+            const rewardInCoins = Math.round(minutes * coinsPerMinute);
+
             return {
-                status: 404,
-                success: false,
-                message: "Focus-session not found",
+                success: true,
+                message: "Calculate reward in coins",
+                data: {
+                    rewardInCoins,
+                },
             };
-        }
+        },
+        {
+            detail: {
+                tags: ['Focus-session']
+            }
+        })
+    .get("/", async () => {
+            const focusSessions = await prisma.focusSession.findMany();
+            return {
+                success: true,
+                message: "Fetch focus-sessions",
+                data: {
+                    focusSessions,
+                }
+            };
+        },
+        {
+            detail: {
+                tags: ['Focus-session']
+            }
+        })
+    .get("/:clerk_id", async ({params}) => {
+            const focusSession = await prisma.focusSession.findMany({
+                where: {
+                    user_id: params.clerk_id,
+                },
+            });
 
-        return {
-            success: true,
-            message: "Fetch focus-session by user ID and ID",
-            data: {
-                focusSession,
-            },
-        };
-    })
+            return {
+                success: true,
+                message: "Fetch focus-sessions by user ID",
+                data: {
+                    focusSession,
+                },
+            };
+        },
+        {
+            detail: {
+                tags: ['Focus-session']
+            }
+        })
+    .get("/:clerk_id/:id", async ({params}) => {
+            const focusSession = await prisma.focusSession.findUnique({
+                where: {
+                    user_id: params.clerk_id,
+                    id: parseInt(params.id, 10),
+                },
+            });
+
+            if (!focusSession) {
+                return {
+                    status: 404,
+                    success: false,
+                    message: "Focus-session not found",
+                };
+            }
+
+            return {
+                success: true,
+                message: "Fetch focus-session by user ID and ID",
+                data: {
+                    focusSession,
+                },
+            };
+        },
+        {
+            detail: {
+                tags: ['Focus-session']
+            }
+        })
     .guard({
         body: t.Object({
             user_id: t.String(),
@@ -91,60 +111,70 @@ const focusSessions = new Elysia({prefix: 'focus-sessions'})
         })
     })
     .post("/", async ({body}) => {
-        const {user_id, session_settings, reward, state, startedAt, endedAt} = body;
-        try {
-            const createdFocusSession = await prisma.focusSession.create({
-                data: {
-                    user_id,
-                    session_settings,
-                    reward,
-                    state,
-                    startedAt,
-                    endedAt
-                }
-            })
+            const {user_id, session_settings, reward, state, startedAt, endedAt} = body;
+            try {
+                const createdFocusSession = await prisma.focusSession.create({
+                    data: {
+                        user_id,
+                        session_settings,
+                        reward,
+                        state,
+                        startedAt,
+                        endedAt
+                    }
+                })
 
-            return {
-                success: true,
-                message: "Created focus-session",
-                data: {
-                    focusSession: createdFocusSession,
-                },
-            };
-        } catch (error) {
-            return {
-                status: 500,
-                success: false,
-                message: "Error creating focus-session",
-                error: error,
-            };
-        }
-    })
+                return {
+                    success: true,
+                    message: "Created focus-session",
+                    data: {
+                        focusSession: createdFocusSession,
+                    },
+                };
+            } catch (error) {
+                return {
+                    status: 500,
+                    success: false,
+                    message: "Error creating focus-session",
+                    error: error,
+                };
+            }
+        },
+        {
+            detail: {
+                tags: ['Focus-session']
+            }
+        })
     .put("/:clerk_id/:id", async ({params, body}) => {
-        try {
-            const updatedFocusSession = await prisma.focusSession.update({
-                where: {
-                    user_id: params.clerk_id,
-                    id: parseInt(params.id, 10),
-                },
-                data: body,
-            });
+            try {
+                const updatedFocusSession = await prisma.focusSession.update({
+                    where: {
+                        user_id: params.clerk_id,
+                        id: parseInt(params.id, 10),
+                    },
+                    data: body,
+                });
 
-            return {
-                success: true,
-                message: "Update focus-session by user ID and ID",
-                data: {
-                    focusSession: updatedFocusSession,
-                },
-            };
-        } catch (error) {
-            return {
-                status: 500,
-                success: false,
-                message: "Error updating focus-session",
-                error: error,
-            };
-        }
-    });
+                return {
+                    success: true,
+                    message: "Update focus-session by user ID and ID",
+                    data: {
+                        focusSession: updatedFocusSession,
+                    },
+                };
+            } catch (error) {
+                return {
+                    status: 500,
+                    success: false,
+                    message: "Error updating focus-session",
+                    error: error,
+                };
+            }
+        },
+        {
+            detail: {
+                tags: ['Focus-session']
+            }
+        });
 
 export default focusSessions;
