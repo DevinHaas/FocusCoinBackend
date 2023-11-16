@@ -1,8 +1,13 @@
-import { Elysia } from "elysia";
-import { prisma } from "../../../libs/prisma";
+import {Elysia} from "elysia";
+import {prisma} from "../../../libs/prisma";
 
 const getController = new Elysia()
-    .get("/", async () => {
+    .get("/", async ({store, set}) => {
+            // @ts-ignore
+            if (!store.auth?.userId) {
+                set.status = 403
+                return 'Unauthorized'
+            }
             const users = await prisma.user.findMany();
             return {
                 success: true,
@@ -17,7 +22,12 @@ const getController = new Elysia()
                 tags: ['User'],
             },
         })
-    .get("/:clerk_id", async ({ params }) => {
+    .get("/:clerk_id", async ({store, set, params}) => {
+            // @ts-ignore
+            if (!store.auth?.userId) {
+                set.status = 403
+                return 'Unauthorized'
+            }
             const user = await prisma.user.findUnique({
                 where: {
                     clerk_id: params.clerk_id,

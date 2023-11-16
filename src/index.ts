@@ -4,6 +4,7 @@ import chalk from 'chalk';
 
 import fs from 'fs';
 import v1 from "./v1/group";
+import {clerkPlugin} from "elysia-clerk";
 
 const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
@@ -37,6 +38,8 @@ const app = new Elysia()
             tags: ['App']
         }
     })
+    // @ts-ignore
+    .use(clerkPlugin())
     .use(v1)
     .listen(3000);
 
