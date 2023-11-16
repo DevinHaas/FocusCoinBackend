@@ -24,4 +24,13 @@ To start the development server run:
 bun run dev
 ```
 
+### Environment variables
+Add the following variables to your .env file:
+```bash
+DATABASE_URL="postgresql://username:password@localhost:5432/focuscoindb"
+CLERK_PUBLISHABLE_KEY=pk_
+CLERK_SECRET_KEY=sk_
+```
+The clerk keys can be found [here](https://dashboard.clerk.com/last-active?path=api-keys).
+
 Open http://localhost:3000/ with your browser to see the result.
