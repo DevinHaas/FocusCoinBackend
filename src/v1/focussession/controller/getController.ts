@@ -2,21 +2,6 @@ import {Elysia} from "elysia";
 import {prisma} from "../../../libs/prisma";
 
 const getController = new Elysia()
-    .get("/", async () => {
-            const focusSessions = await prisma.focusSession.findMany();
-            return {
-                success: true,
-                message: "Fetch focus-sessions",
-                data: {
-                    focusSessions,
-                }
-            };
-        },
-        {
-            detail: {
-                tags: ['Focus-session']
-            }
-        })
     .get("/:clerk_id", async ({params}) => {
             const focusSession = await prisma.focusSession.findMany({
                 where: {

@@ -2,26 +2,6 @@ import {Elysia} from "elysia";
 import {prisma} from "../../../libs/prisma";
 
 const getController = new Elysia()
-    .get("/", async ({store, set}) => {
-            // @ts-ignore
-            if (!store.auth?.userId) {
-                set.status = 403
-                return 'Unauthorized'
-            }
-            const users = await prisma.user.findMany();
-            return {
-                success: true,
-                message: "Fetch users",
-                data: {
-                    users,
-                },
-            };
-        },
-        {
-            detail: {
-                tags: ['User'],
-            },
-        })
     .get("/:clerk_id", async ({store, set, params}) => {
             // @ts-ignore
             if (!store.auth?.userId) {
