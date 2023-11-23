@@ -1,20 +1,26 @@
 import {Elysia, t} from "elysia";
 import {prisma} from "../../../libs/prisma";
 import {SessionState} from "@prisma/client";
+import calculateReward from "../utils/calculateReward";
 
 const createController = new Elysia()
     .guard({
         body: t.Object({
             user_id: t.String(),
-            session_settings: t.Object({}),
-            reward: t.Number(),
+            session_settings: t.Object({
+                timeInMinutes: t.Number(),
+                timeManagementTechnique: t.String()
+            }),
             state: t.Enum(SessionState),
             startedAt: t.Date(),
             endedAt: t.Date(),
         })
     })
     .post("/", async ({body}) => {
-            const {user_id, session_settings, reward, state, startedAt, endedAt} = body;
+            const {user_id, session_settings, state, startedAt, endedAt} = body;
+
+            const reward = calculateReward(session_settings.timeInMinutes);
+
             try {
                 const createdFocusSession = await prisma.focusSession.create({
                     data: {
