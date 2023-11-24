@@ -14,6 +14,21 @@ const createController = new Elysia()
     .post("/", async ({body}) => {
             const {clerk_id} = body;
             try {
+
+                const existingUser = await prisma.user.findUnique({
+                    where: {
+                        clerk_id,
+                    },
+                });
+
+                if (existingUser) {
+                    return {
+                        status: 400,
+                        success: false,
+                        message: "User with the given clerk_id already exists",
+                    };
+                }
+
                 const createdUser = await prisma.user.create({
                     data: {
                         clerk_id,
@@ -38,7 +53,6 @@ const createController = new Elysia()
                     error: error,
                 };
             }
-
         },
         {
             detail: {
