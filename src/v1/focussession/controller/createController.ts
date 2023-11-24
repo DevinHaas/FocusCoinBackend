@@ -16,12 +16,17 @@ const createController = new Elysia()
             endedAt: t.Date(),
         })
     })
-    .post("/", async ({body}) => {
-            const {user_id, session_settings, state, startedAt, endedAt} = body;
-
-            const reward = calculateReward(session_settings.timeInMinutes);
-
+    .post("/", async ({store, set, body}) => {
+            // @ts-ignore
+            if (!store.auth?.userId) {
+                set.status = 403
+                return 'Unauthorized'
+            }
             try {
+                const {user_id, session_settings, state, startedAt, endedAt} = body;
+
+                const reward = calculateReward(session_settings.timeInMinutes);
+
                 const createdFocusSession = await prisma.focusSession.create({
                     data: {
                         user_id,
@@ -31,7 +36,7 @@ const createController = new Elysia()
                         startedAt,
                         endedAt
                     }
-                })
+                });
 
                 return {
                     success: true,
@@ -41,6 +46,7 @@ const createController = new Elysia()
                     },
                 };
             } catch (error) {
+                console.error("Error creating focus-session:", error);
                 return {
                     status: 500,
                     success: false,
