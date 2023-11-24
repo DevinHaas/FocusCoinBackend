@@ -5,10 +5,7 @@ import {UserSubscription} from "@prisma/client";
 const createController = new Elysia()
     .guard({
         body: t.Object({
-            clerk_id: t.String(),
-            focuscoins: t.Number(),
-            subscription: t.Enum(UserSubscription),
-            focus_sessions: t.Object({})
+            clerk_id: t.String()
         })
     })
     .post("/", async ({body}) => {
