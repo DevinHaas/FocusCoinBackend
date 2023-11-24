@@ -34,3 +34,13 @@ CLERK_SECRET_KEY=sk_
 The clerk keys can be found [here](https://dashboard.clerk.com/last-active?path=api-keys).
 
 Open http://localhost:3000/ with your browser to see the result.
+
+### Making requests
+For development purposes comment out the following code in the endpoints to disable clerk authentication:
+```bash
+// @ts-ignore
+if (!store.auth?.userId) {
+    set.status = 403
+    return 'Unauthorized'
+}
+```
