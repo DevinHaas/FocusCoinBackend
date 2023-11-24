@@ -11,11 +11,16 @@ const updateController = new Elysia()
             focus_sessions: t.Object({})
         })
     })
-    .put("/:clerk_id", async ({params, body}) => {
+    .put("/:clerk_id", async ({store, set, params: {clerk_id}, body}) => {
+            // @ts-ignore
+            if (!store.auth?.userId) {
+                set.status = 403
+                return 'Unauthorized'
+            }
             try {
                 const updatedUser = await prisma.user.update({
                     where: {
-                        clerk_id: params.clerk_id,
+                        clerk_id,
                     },
                     data: body,
                 });

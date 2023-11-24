@@ -2,28 +2,42 @@ import {Elysia} from "elysia";
 import {prisma} from "../../../libs/prisma";
 
 const deleteController = new Elysia()
-    .delete("/:clerk_id", async ({params}) => {
-            const user = await prisma.user.delete({
-                where: {
-                    clerk_id: params.clerk_id,
-                },
-            });
+    .delete("/:clerk_id", async ({store, set, params: {clerk_id}}) => {
+            // @ts-ignore
+            if (!store.auth?.userId) {
+                set.status = 403
+                return 'Unauthorized'
+            }
+            try {
+                const deletedUser = await prisma.user.delete({
+                    where: {
+                        clerk_id,
+                    },
+                });
 
-            if (!user) {
+                if (!deletedUser) {
+                    return {
+                        status: 404,
+                        success: false,
+                        message: "User not found",
+                    };
+                }
+
                 return {
-                    status: 404,
+                    success: true,
+                    message: "Delete user by ID",
+                    data: {
+                        user: deletedUser,
+                    },
+                };
+            } catch (error) {
+                console.error("Error deleting user:", error);
+                return {
+                    status: 500,
                     success: false,
-                    message: "User not found",
+                    message: "Internal Server Error",
                 };
             }
-
-            return {
-                success: true,
-                message: "Delete user by ID",
-                data: {
-                    user,
-                },
-            };
         },
         {
             detail: {

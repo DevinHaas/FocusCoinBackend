@@ -2,35 +2,35 @@ import {Elysia} from "elysia";
 import {prisma} from "../../../libs/prisma";
 
 const getController = new Elysia()
-    .get("/", async () => {
-            const focusSessions = await prisma.focusSession.findMany();
-            return {
-                success: true,
-                message: "Fetch focus-sessions",
-                data: {
-                    focusSessions,
-                }
-            };
-        },
-        {
-            detail: {
-                tags: ['Focus-session']
+    .get("/:clerk_id", async ({store, set, params}) => {
+            // @ts-ignore
+            if (!store.auth?.userId) {
+                set.status = 403
+                return 'Unauthorized'
             }
-        })
-    .get("/:clerk_id", async ({params}) => {
-            const focusSession = await prisma.focusSession.findMany({
-                where: {
-                    user_id: params.clerk_id,
-                },
-            });
+            try {
+                const userFocusSessions = await prisma.focusSession.findMany({
+                    where: {
+                        user_id: params.clerk_id,
+                    },
+                });
 
-            return {
-                success: true,
-                message: "Fetch focus-sessions by user ID",
-                data: {
-                    focusSession,
-                },
-            };
+                return {
+                    success: true,
+                    message: "Fetch focus-sessions by user ID",
+                    data: {
+                        focusSessions: userFocusSessions,
+                    },
+                };
+            } catch (error) {
+                console.error("Error fetching focus-sessions:", error);
+                return {
+                    status: 500,
+                    success: false,
+                    message: "Internal Server Error",
+                    error: error,
+                };
+            }
         },
         {
             detail: {
@@ -38,28 +38,38 @@ const getController = new Elysia()
             }
         })
     .get("/:clerk_id/:id", async ({params}) => {
-            const focusSession = await prisma.focusSession.findUnique({
-                where: {
-                    user_id: params.clerk_id,
-                    id: parseInt(params.id, 10),
-                },
-            });
+            try {
+                const focusSession = await prisma.focusSession.findUnique({
+                    where: {
+                        user_id: params.clerk_id,
+                        id: params.id,
+                    },
+                });
 
-            if (!focusSession) {
+                if (!focusSession) {
+                    return {
+                        status: 404,
+                        success: false,
+                        message: "Focus-session not found",
+                    };
+                }
+
                 return {
-                    status: 404,
+                    success: true,
+                    message: "Fetch focus-session by user ID and ID",
+                    data: {
+                        focusSession,
+                    },
+                };
+            } catch (error) {
+                console.error("Error fetching focus-session:", error);
+                return {
+                    status: 500,
                     success: false,
-                    message: "Focus-session not found",
+                    message: "Internal Server Error",
+                    error: error,
                 };
             }
-
-            return {
-                success: true,
-                message: "Fetch focus-session by user ID and ID",
-                data: {
-                    focusSession,
-                },
-            };
         },
         {
             detail: {

@@ -6,7 +6,7 @@ CREATE TYPE "SessionState" AS ENUM ('WAITING', 'RUNNING', 'PAUSED', 'CANCELLED',
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" SERIAL NOT NULL,
+    "id" UUID NOT NULL,
     "clerk_id" TEXT NOT NULL,
     "focuscoins" INTEGER NOT NULL,
     "subscription" "UserSubscription" NOT NULL DEFAULT 'STARTER',
@@ -16,7 +16,7 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "FocusSession" (
-    "id" SERIAL NOT NULL,
+    "id" UUID NOT NULL,
     "user_id" TEXT NOT NULL,
     "session_settings" JSONB NOT NULL,
     "reward" INTEGER NOT NULL,

@@ -5,15 +5,30 @@ import {UserSubscription} from "@prisma/client";
 const createController = new Elysia()
     .guard({
         body: t.Object({
-            clerk_id: t.String(),
-            focuscoins: t.Number(),
-            subscription: t.Enum(UserSubscription),
-            focus_sessions: t.Object({})
+            clerk_id: t.String()
         })
     })
-    .post("/", async ({body}) => {
-            const {clerk_id} = body;
+    .post("/", async ({store, set, body: {clerk_id}}) => {
+            // @ts-ignore
+            if (!store.auth?.userId) {
+                set.status = 403
+                return 'Unauthorized'
+            }
             try {
+                const existingUser = await prisma.user.findUnique({
+                    where: {
+                        clerk_id,
+                    },
+                });
+
+                if (existingUser) {
+                    return {
+                        status: 400,
+                        success: false,
+                        message: "User with the given clerk_id already exists",
+                    };
+                }
+
                 const createdUser = await prisma.user.create({
                     data: {
                         clerk_id,
@@ -38,7 +53,6 @@ const createController = new Elysia()
                     error: error,
                 };
             }
-
         },
         {
             detail: {
