@@ -3,10 +3,8 @@ import {PrismaClient, SessionState, UserSubscription} from "@prisma/client";
 const client = new PrismaClient();
 
 async function main() {
-    const demoUser = await client.user.upsert({
-        where: {id: 1},
-        update: {},
-        create: {
+    const demoUser = await client.user.create({
+        data: {
             clerk_id: 'user_1',
             focuscoins: 150,
             subscription: UserSubscription.STARTER,
