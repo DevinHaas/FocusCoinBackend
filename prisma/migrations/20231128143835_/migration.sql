@@ -9,6 +9,8 @@ CREATE TABLE "User" (
     "id" UUID NOT NULL,
     "clerk_id" TEXT NOT NULL,
     "focuscoins" INTEGER NOT NULL,
+    "total_generated_coins" INTEGER NOT NULL,
+    "total_completed_sessions" INTEGER NOT NULL,
     "subscription" "UserSubscription" NOT NULL DEFAULT 'STARTER',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
