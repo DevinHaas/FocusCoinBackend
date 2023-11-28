@@ -21,7 +21,7 @@ enum SessionState {
   PAUSED
   CANCELLED
   PENDING
-  FINISHED
+  COMPLETED
 }
 
 model User {
@@ -31,6 +31,7 @@ model User {
   total_generated_coins    Int
   total_completed_sessions Int
   subscription             UserSubscription @default(STARTER)
+  current_focus_session_id String
   focus_sessions           FocusSession[]   @relation(name: "UserFocusSessions")
 }
 

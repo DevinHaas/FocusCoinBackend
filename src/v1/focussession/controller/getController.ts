@@ -37,7 +37,12 @@ const getController = new Elysia()
                 tags: ['Focus-session']
             }
         })
-    .get("/:clerk_id/:id", async ({params}) => {
+    .get("/:clerk_id/:id", async ({store, set, params}) => {
+            // @ts-ignore
+            if (!store.auth?.userId) {
+                set.status = 403
+                return 'Unauthorized'
+            }
             try {
                 const focusSession = await prisma.focusSession.findUnique({
                     where: {

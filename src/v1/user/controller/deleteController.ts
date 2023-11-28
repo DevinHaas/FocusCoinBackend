@@ -9,6 +9,14 @@ const deleteController = new Elysia()
                 return 'Unauthorized'
             }
             try {
+                // delete all sessions from user
+                await prisma.focusSession.deleteMany({
+                    where: {
+                        user_id: clerk_id,
+                    },
+                });
+
+                // delete user
                 const deletedUser = await prisma.user.delete({
                     where: {
                         clerk_id,

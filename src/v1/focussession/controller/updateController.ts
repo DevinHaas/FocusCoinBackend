@@ -35,7 +35,7 @@ const updateController = new Elysia()
                     }
                 });
 
-                if (currentFocusSession?.state === SessionState.FINISHED) {
+                if (currentFocusSession?.state === SessionState.COMPLETED) {
                     await prisma.user.update({
                         where: {
                             clerk_id: params.clerk_id,
@@ -50,6 +50,7 @@ const updateController = new Elysia()
                             total_completed_sessions: {
                                 increment: 1,
                             },
+                            current_focus_session_id: ""
                         },
                     });
                 }
