@@ -28,6 +28,32 @@ const updateController = new Elysia()
                     data: body,
                 });
 
+                const currentFocusSession = await prisma.focusSession.findUnique({
+                    where: {
+                        user_id: params.clerk_id,
+                        id: params.id,
+                    }
+                });
+
+                if (currentFocusSession?.state === SessionState.FINISHED) {
+                    await prisma.user.update({
+                        where: {
+                            clerk_id: params.clerk_id,
+                        },
+                        data: {
+                            focuscoins: {
+                                increment: currentFocusSession?.reward,
+                            },
+                            total_generated_coins: {
+                                increment: currentFocusSession?.reward,
+                            },
+                            total_completed_sessions: {
+                                increment: 1,
+                            },
+                        },
+                    });
+                }
+
                 return {
                     success: true,
                     message: "Update focus-session by user ID and ID",
