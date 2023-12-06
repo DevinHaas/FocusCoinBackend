@@ -5,11 +5,13 @@ WORKDIR /app
 COPY package.json .
 COPY bun.lockb .
 
-RUN bun install
 
 COPY prisma prisma
 COPY scripts scripts
 COPY src src
+
+RUN bun install
+
 COPY tsconfig.json .
 
 RUN bunx prisma generate
