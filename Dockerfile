@@ -6,7 +6,7 @@ COPY package.json .
 COPY bun.lockb .
 
 
-COPY prisma prisma
+COPY prisma ./prisma/
 COPY scripts scripts
 COPY src src
 
