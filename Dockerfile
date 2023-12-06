@@ -7,6 +7,8 @@ COPY bun.lockb .
 
 RUN bun install
 
+COPY prisma prisma
+COPY scripts scripts
 COPY src src
 COPY tsconfig.json .
 
