@@ -1,0 +1,31 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      variables:
+        VERSION: latest
+    - if: $CI_COMMIT_TAG
+      variables:
+        VERSION: $CI_COMMIT_TAG
+
+
+stages:
+  - package
+
+build:
+  image: docker:20-dind
+  stage: package
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  services:
+    - name: docker:20-dind
+      alias: docker
+      command: ["--tls=false"]
+  script:
+    - echo "$REGISTRY_PASSWORD" | docker login registry.werren.io -u registry --password-stdin
+    - docker build -t registry.werren.io/focuscoin/api:$VERSION .
+    - docker push registry.werren.io/focuscoin/api:$VERSION
+
+
+
