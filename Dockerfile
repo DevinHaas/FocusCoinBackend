@@ -12,6 +12,8 @@ COPY scripts scripts
 COPY src src
 COPY tsconfig.json .
 
+RUN prisma generate
+
 ENV NODE_ENV production
 CMD ["bun", "src/index.ts"]
 
