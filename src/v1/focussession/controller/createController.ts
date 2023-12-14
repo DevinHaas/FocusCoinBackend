@@ -38,6 +38,15 @@ const createController = new Elysia()
                     }
                 });
 
+                await prisma.user.update({
+                    where: {
+                        clerk_id: user_id
+                    },
+                    data: {
+                        current_focus_session_id: createdFocusSession.id
+                    }
+                })
+
                 return {
                     success: true,
                     message: "Created focus-session",

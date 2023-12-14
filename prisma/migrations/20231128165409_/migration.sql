@@ -2,14 +2,17 @@
 CREATE TYPE "UserSubscription" AS ENUM ('STARTER', 'PREMIUM');
 
 -- CreateEnum
-CREATE TYPE "SessionState" AS ENUM ('WAITING', 'RUNNING', 'PAUSED', 'CANCELLED', 'PENDING', 'FINISHED');
+CREATE TYPE "SessionState" AS ENUM ('WAITING', 'RUNNING', 'PAUSED', 'CANCELLED', 'PENDING', 'COMPLETED');
 
 -- CreateTable
 CREATE TABLE "User" (
     "id" UUID NOT NULL,
     "clerk_id" TEXT NOT NULL,
     "focuscoins" INTEGER NOT NULL,
+    "total_generated_coins" INTEGER NOT NULL,
+    "total_completed_sessions" INTEGER NOT NULL,
     "subscription" "UserSubscription" NOT NULL DEFAULT 'STARTER',
+    "current_focus_session_id" TEXT NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

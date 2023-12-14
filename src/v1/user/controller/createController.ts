@@ -33,7 +33,10 @@ const createController = new Elysia()
                     data: {
                         clerk_id,
                         focuscoins: 0,
+                        total_generated_coins: 0,
+                        total_completed_sessions: 0,
                         subscription: UserSubscription.STARTER,
+                        current_focus_session_id: "",
                         focus_sessions: {}
                     }
                 })
