@@ -38,7 +38,6 @@ const app = new Elysia()
             tags: ['App']
         }
     })
-    // @ts-ignore
     .use(clerkPlugin())
     .use(v1)
     .listen(3000);

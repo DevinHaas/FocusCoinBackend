@@ -1,4 +1,5 @@
 import {PrismaClient, SessionState, UserSubscription} from "@prisma/client";
+import {prisma} from "../src/libs/prisma";
 
 const client = new PrismaClient();
 
@@ -6,8 +7,11 @@ async function main() {
     const demoUser = await client.user.create({
         data: {
             clerk_id: 'user_1',
-            focuscoins: 150,
             subscription: UserSubscription.STARTER,
+            focuscoins: 150,
+            total_generated_coins: 10,
+            total_completed_sessions: 3,
+            current_focus_session_id: "",
             focus_sessions: {
                 create: [
                     {
@@ -20,7 +24,7 @@ async function main() {
                     {
                         session_settings: {},
                         reward: 30,
-                        state: SessionState.FINISHED,
+                        state: SessionState.COMPLETED,
                         startedAt: new Date(),
                         endedAt: new Date(),
                     },
@@ -39,13 +43,12 @@ async function main() {
     console.log('Demo user created:', demoUser);
 }
 
-main()
-    .then(() => {
-        client.$disconnect();
-        process.exit(0);
-    })
+await main()
     .catch((e) => {
-        console.log("error:", e);
-        client.$disconnect();
+        console.error(e);
         process.exit(1);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+        console.log("Disconnected from database.");
     });

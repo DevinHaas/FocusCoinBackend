@@ -31,6 +31,9 @@ DATABASE_URL="postgresql://username:password@localhost:5432/focuscoindb"
 CLERK_PUBLISHABLE_KEY=pk_
 CLERK_SECRET_KEY=sk_
 ```
+
+Don't forget to change username and password to the specified values when creating the docker container
+
 The clerk keys can be found [here](https://dashboard.clerk.com/last-active?path=api-keys).
 
 Open http://localhost:3000/ with your browser to see the result.
