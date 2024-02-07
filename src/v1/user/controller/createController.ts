@@ -10,10 +10,13 @@ const createController = new Elysia()
     })
     .post("/", async ({store, set, body: {clerk_id}}) => {
             // @ts-ignore
+
             if (!store.auth?.userId) {
                 set.status = 403
                 return 'Unauthorized'
             }
+
+
             try {
                 const existingUser = await prisma.user.findUnique({
                     where: {

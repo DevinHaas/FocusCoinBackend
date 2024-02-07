@@ -35,7 +35,7 @@ const deleteController = new Elysia()
                     success: true,
                     message: "Delete user by ID",
                     data: {
-                        user: deletedUser,
+                        deletedUser,
                     },
                 };
             } catch (error) {
