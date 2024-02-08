@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.ts"
+    "dev": "bun run --watch src/index.ts",
+    "debug" : "bun --inspect src/index.ts",
+    "build": "bun build src/index.ts"
   },
   "prisma": {
     "seed": "bun scripts/seed.ts"
@@ -13,11 +15,11 @@
     "@prisma/client": "^5.6.0",
     "chalk": "^5.3.0",
     "elysia": "latest",
-    "elysia-clerk": "^0.2.2"
+    "elysia-clerk": "^0.3.0"
   },
   "devDependencies": {
     "bun-types": "latest",
-    "prisma": "^5.6.0"
+    "prisma": "latest"
   },
   "module": "src/index.js"
 }
