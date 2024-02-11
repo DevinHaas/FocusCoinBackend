@@ -26,9 +26,8 @@ const getController = new Elysia()
                 return {
                     success: true,
                     message: "Fetch user by ID",
-                    data: {
-                        user,
-                    },
+                    user,
+
                 };
             } catch (error) {
                 console.error("Error fetching user:", error);

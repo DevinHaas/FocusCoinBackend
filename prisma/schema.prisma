@@ -10,6 +10,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TimeManagementTechniqueEnum {
+  SIMPLE
+}
+
+
 enum UserSubscription {
   STARTER
   PREMIUM
@@ -47,7 +52,7 @@ model FocusSession {
   reward           Int
   state            SessionState
   startedAt        DateTime
-  endedAt          DateTime
+  endedAt          DateTime?
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 }

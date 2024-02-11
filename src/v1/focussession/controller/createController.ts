@@ -1,19 +1,22 @@
-import {Elysia, t} from "elysia";
 import {prisma} from "../../../libs/prisma";
-import {SessionState} from "@prisma/client";
 import calculateReward from "../utils/calculateReward";
+import {SessionState} from "@prisma/client";
+import {Elysia, t} from "elysia";
+import {TimeManagementTechniqueEnum} from "../../../enums/TimeManagementTechniqueEnum";
 
 const createController = new Elysia()
     .guard({
         body: t.Object({
             user_id: t.String(),
             session_settings: t.Object({
-                timeInMinutes: t.Number(),
-                timeManagementTechnique: t.String()
+                focusTime: t.Number(),
+                timeManagementTechnique: t.Enum(TimeManagementTechniqueEnum),
+                pauseTime: t.Optional(t.Number()),
+                numberOfSession: t.Optional(t.Number())
             }),
             state: t.Enum(SessionState),
             startedAt: t.Date(),
-            endedAt: t.Date(),
+            endedAt: t.Optional(t.Date()),
         })
     })
     .post("/", async ({store, set, body}) => {
@@ -25,17 +28,22 @@ const createController = new Elysia()
             try {
                 const {user_id, session_settings, state, startedAt, endedAt} = body;
 
-                const reward = calculateReward(session_settings.timeInMinutes);
+                const reward = calculateReward(session_settings.focusTime);
+
+                const data: any = {
+                    user_id,
+                    session_settings,
+                    reward,
+                    state,
+                    startedAt
+                };
+
+                if (endedAt) {
+                    data.endedAt = endedAt;
+                }
 
                 const createdFocusSession = await prisma.focusSession.create({
-                    data: {
-                        user_id,
-                        session_settings,
-                        reward,
-                        state,
-                        startedAt,
-                        endedAt
-                    }
+                    data
                 });
 
                 await prisma.user.update({
