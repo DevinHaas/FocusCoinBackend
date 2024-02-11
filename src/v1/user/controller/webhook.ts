@@ -1,40 +1,39 @@
-import {Elysia} from 'elysia';
-import {Webhook} from 'svix';
+import {Elysia} from "elysia";
+import {Webhook} from "svix";
 
-type EventType = 'user.created' | 'user.updated' | 'user.deleted';
+type EventType = "user.created" | "user.updated" | "user.deleted";
 
 type Event = {
     data: Record<string, string | number>;
-    object: 'event';
+    object: "event";
     type: EventType;
 };
 
 const webhookSecret = process.env.WEBHOOK_SECRET;
 
 if (!webhookSecret) {
-    throw new Error('Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local')
+    throw new Error("Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local")
 }
 
 const webhook = new Elysia()
-    .post('/api/webhooks', async ({set, body}) => {
+    .post("/api/webhooks", async ({headers, body}) => {
 
             // Get the headers
-            console.log('Headers: ' + JSON.stringify(set));
-            const headers: any = set.headers;
+            console.log(headers);
 
             // Get the body
-            console.log('Body: ' + JSON.stringify(body));
-            const payload = JSON.stringify(body);
+            console.log(body);
+            const payload: string | Buffer = body as Buffer;
 
-            const svixId = headers['svix-id'];
-            const svixTimestamp = headers['svix-timestamp'];
-            const svixSignature = headers['svix-signature'];
+            const svixId = headers["svix-id"] as string;
+            const svixTimestamp = headers["svix-timestamp"] as string;
+            const svixSignature = headers["svix-signature"] as string;
 
             if (!svixId || !svixTimestamp || !svixSignature) {
                 return {
                     status: 400,
                     success: false,
-                    message: 'Error occurred -- no svix headers'
+                    message: "Error occurred -- no svix headers"
                 }
             }
 
@@ -46,12 +45,12 @@ const webhook = new Elysia()
             // Verify the payload with the headers
             try {
                 evt = wh.verify(payload, {
-                    'svix-id': svixId,
-                    'svix-timestamp': svixTimestamp,
-                    'svix-signature': svixSignature,
+                    "svix-id": svixId,
+                    "svix-timestamp": svixTimestamp,
+                    "svix-signature": svixSignature,
                 }) as Event;
             } catch (err: any) {
-                console.log('Webhook failed to verify. Error:', err.message);
+                console.log("Webhook failed to verify. Error:", err.message);
                 return {
                     status: 400,
                     success: false,
@@ -64,17 +63,17 @@ const webhook = new Elysia()
             const eventType = evt.type;
 
             console.log(`Webhook with an ID of ${id} and type of ${eventType}`);
-            console.log('Webhook body:', evt.data);
+            console.log("Webhook body:", evt.data);
 
             return {
                 status: 200,
                 success: true,
-                message: 'Webhook received'
+                message: "Webhook received"
             }
         },
         {
             detail: {
-                tags: ['User Webhook']
+                tags: ["User Webhook"]
             }
         });
 
