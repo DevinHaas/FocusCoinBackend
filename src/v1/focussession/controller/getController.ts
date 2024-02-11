@@ -18,9 +18,8 @@ const getController = new Elysia()
                 return {
                     success: true,
                     message: "Fetch focus-sessions by user ID",
-                    data: {
-                        focusSessions: userFocusSessions,
-                    },
+                    userFocusSessions
+
                 };
             } catch (error) {
                 console.error("Error fetching focus-sessions:", error);

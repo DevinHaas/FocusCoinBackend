@@ -1,12 +1,18 @@
 import {Elysia, t} from "elysia";
 import {prisma} from "../../../libs/prisma";
 import {SessionState} from "@prisma/client";
+import {TimeManagementTechniqueEnum} from "../../../enums/TimeManagementTechniqueEnum";
 
 const updateController = new Elysia()
     .guard({
         body: t.Object({
             user_id: t.String(),
-            session_settings: t.Object({}),
+            session_settings: t.Object({
+                focusTime: t.Number(),
+                timeManagementTechnique: t.Enum(TimeManagementTechniqueEnum),
+                pauseTime: t.Optional(t.Number()),
+                numberOfSession: t.Optional(t.Number())
+            }),
             reward: t.Number(),
             state: t.Enum(SessionState),
             startedAt: t.Date(),
