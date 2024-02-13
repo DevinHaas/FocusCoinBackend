@@ -16,15 +16,17 @@ if (!webhookSecret) {
 }
 
 const webhook = new Elysia()
+    .onParse(({request}, contentType) => {
+        if (contentType === 'application/json') {
+            return request.text();
+        }
+    })
     .post("/api/webhooks", async ({headers, body}) => {
 
-            // Get the headers
-            console.log(headers);
-
             // Get the body
-            console.log(body);
             const payload: string | Buffer = body as Buffer;
 
+            // Get the Svix values from the header
             const svixId = headers["svix-id"] as string;
             const svixTimestamp = headers["svix-timestamp"] as string;
             const svixSignature = headers["svix-signature"] as string;
