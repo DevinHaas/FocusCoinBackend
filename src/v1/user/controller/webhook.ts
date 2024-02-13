@@ -1,5 +1,7 @@
 import {Elysia} from "elysia";
 import {Webhook} from "svix";
+import {prisma} from "../../../libs/prisma";
+import {UserSubscription} from "@prisma/client";
 
 type EventType = "user.created" | "user.updated" | "user.deleted";
 
@@ -67,6 +69,26 @@ const webhook = new Elysia()
             console.log(`Webhook with an ID of ${id} and type of ${eventType}`);
             console.log("Webhook body:", evt.data);
 
+            // Get the users ID from clerk
+            const clerk_id = evt.data.id as string;
+
+            // Perform actions based on event type
+            switch (eventType) {
+                case "user.created":
+                    await createUser(clerk_id);
+                    console.log("Created user");
+                    break;
+                case "user.updated":
+                    console.log("Updated user");
+                    break;
+                case "user.deleted":
+                    await deleteUser(clerk_id);
+                    console.log("Deleted user");
+                    break;
+                default:
+                    console.log("Unhandled event type:", eventType);
+            }
+
             return {
                 status: 200,
                 success: true,
@@ -80,3 +102,27 @@ const webhook = new Elysia()
         });
 
 export default webhook;
+
+async function createUser(clerk_id: string): Promise<void> {
+    // Implement logic to create user using Prisma
+    await prisma.user.create({
+        data: {
+            clerk_id,
+            focuscoins: 0,
+            total_generated_coins: 0,
+            total_completed_sessions: 0,
+            subscription: UserSubscription.STARTER,
+            current_focus_session_id: "",
+            focus_sessions: {}
+        },
+    });
+}
+
+async function deleteUser(clerk_id: string): Promise<void> {
+    // Implement logic to delete user using Prisma
+    await prisma.user.delete({
+        where: {
+            id: clerk_id,
+        },
+    });
+}
