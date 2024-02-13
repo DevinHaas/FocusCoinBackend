@@ -1,45 +1,61 @@
 # FocusCoin Backend
 
 ## Getting Started
-Install Bun locally:
+To kickstart your development journey, install Bun locally using the following command:
+
 ```bash
 curl https://bun.sh/install | bash
 ```
 
 ## Database
-Spin up a postgresql database in docker:
+Set up a PostgreSQL database in a Docker container with the following command:
+
 ```bash
 docker run --name focuscoin-postgres -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=focuscoindb -d -p 5432:5432 postgres
 ```
 
 ### Migrations
-To apply changes in schema.prisma you need to run a new migration with prisma:
+Apply changes to the schema by running a new migration with Prisma:
+
 ```bash
 bunx prisma migrate dev
 ```
 
 ## Development
-To start the development server run:
+Initiate the development server with:
+
 ```bash
 bun run dev
 ```
 
 ### Environment variables
-Add the following variables to your .env file:
+Ensure your `.env` file includes the following variables:
+
 ```bash
-DATABASE_URL="postgresql://username:password@localhost:5432/focuscoindb"
+WEBHOOK_SECRET=
 CLERK_PUBLISHABLE_KEY=pk_
 CLERK_SECRET_KEY=sk_
+DATABASE_URL="postgresql://user:password@localhost:5432/focuscoindb"
 ```
 
-Don't forget to change username and password to the specified values when creating the docker container
+Remember to modify the username and password in the Docker container creation process.
 
-The clerk keys can be found [here](https://dashboard.clerk.com/last-active?path=api-keys).
+Retrieve the Clerk keys [here](https://dashboard.clerk.com/last-active?path=api-keys).
 
-Open http://localhost:3000/ with your browser to see the result.
+### Sync users to db
+Sync users from Clerk to the local database by adding the WEBHOOK_SECRET to your `.env.local` file. Find the secret [here](https://dashboard.clerk.com/) under webhooks.
+
+The sync functionality uses webhooks, so for local development, set up a proxy endpoint using [ngrok](https://ngrok.com):
+
+1. Create an account on ngrok.
+2. Follow the guide to set up your local machine.
+3. Launch the endpoint.
+4. Create a new endpoint in [Clerk](https://dashboard.clerk.com/) with the launched endpoint.
+5. Now you're ready to go!
 
 ### Making requests
-For development purposes comment out the following code in the endpoints to disable clerk authentication:
+For development purposes, comment out the following code in the endpoints to disable Clerk authentication:
+
 ```bash
 // @ts-ignore
 if (!store.auth?.userId) {
@@ -47,3 +63,5 @@ if (!store.auth?.userId) {
     return 'Unauthorized'
 }
 ```
+
+Visit http://localhost:3000/ in your browser to see the result.
