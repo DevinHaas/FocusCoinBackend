@@ -104,7 +104,7 @@ const webhook = new Elysia()
 export default webhook;
 
 async function createUser(clerk_id: string): Promise<void> {
-    // Implement logic to create user using Prisma
+    // Create user
     await prisma.user.create({
         data: {
             clerk_id,
@@ -119,10 +119,17 @@ async function createUser(clerk_id: string): Promise<void> {
 }
 
 async function deleteUser(clerk_id: string): Promise<void> {
-    // Implement logic to delete user using Prisma
+    // Delete all focus sessions from user
+    await prisma.focusSession.deleteMany({
+        where: {
+            user_id: clerk_id,
+        },
+    });
+
+    // Delete user
     await prisma.user.delete({
         where: {
-            id: clerk_id,
+            clerk_id,
         },
     });
 }
