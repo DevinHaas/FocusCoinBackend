@@ -3,7 +3,7 @@ import {Webhook} from "svix";
 import {prisma} from "../../../libs/prisma";
 import {UserSubscription} from "@prisma/client";
 
-type EventType = "user.created" | "user.updated" | "user.deleted";
+type EventType = "user.created" | "user.deleted";
 
 type Event = {
     data: Record<string, string | number>;
@@ -54,20 +54,15 @@ const webhook = new Elysia()
                     "svix-signature": svixSignature,
                 }) as Event;
             } catch (err: any) {
-                console.log("Webhook failed to verify. Error:", err.message);
                 return {
                     status: 400,
                     success: false,
-                    message: err.message
+                    message: "Webhook failed to verify. Error:" + err.message
                 }
             }
 
             // Get the ID and type
-            const {id} = evt.data;
             const eventType = evt.type;
-
-            console.log(`Webhook with an ID of ${id} and type of ${eventType}`);
-            console.log("Webhook body:", evt.data);
 
             // Get the users ID from clerk
             const clerk_id = evt.data.id as string;
@@ -76,14 +71,9 @@ const webhook = new Elysia()
             switch (eventType) {
                 case "user.created":
                     await createUser(clerk_id);
-                    console.log("Created user");
-                    break;
-                case "user.updated":
-                    console.log("Updated user");
                     break;
                 case "user.deleted":
                     await deleteUser(clerk_id);
-                    console.log("Deleted user");
                     break;
                 default:
                     console.log("Unhandled event type:", eventType);
