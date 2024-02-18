@@ -1,4 +1,4 @@
-import {Elysia} from "elysia";
+import {Elysia, t} from "elysia";
 import {Webhook} from "svix";
 import {prisma} from "../../../libs/prisma";
 import {UserSubscription} from "@prisma/client";
@@ -23,10 +23,13 @@ const webhook = new Elysia()
             return request.text();
         }
     })
-    .post("/api/webhooks", async ({headers, body}) => {
+    .guard({
+        body: t.String()
+    })
+    .post("/webhooks/auth", async ({headers, body}) => {
 
             // Get the body
-            const payload: string | Buffer = body as Buffer;
+            const payload: string = body;
 
             // Get the Svix values from the header
             const svixId = headers["svix-id"] as string;
