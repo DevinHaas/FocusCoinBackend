@@ -1,0 +1,29 @@
+{
+  "name": "focuscoin-backend",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch src/index.ts",
+    "debug": "bun --inspect src/index.ts",
+    "build": "bun build src/index.ts"
+  },
+  "prisma": {
+    "seed": "bun scripts/seed.ts"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "prisma": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@elysiajs/swagger": "^0.8.5",
+    "@prisma/client": "^5.9.1",
+    "chalk": "^5.3.0",
+    "elysia": "latest",
+    "elysia-clerk": "^0.3.1",
+    "svix": "^1.18.0"
+  }
+}
