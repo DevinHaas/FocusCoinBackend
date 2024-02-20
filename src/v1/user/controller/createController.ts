@@ -3,11 +3,6 @@ import {prisma} from "../../../libs/prisma";
 import {UserSubscription} from "@prisma/client";
 
 const createController = new Elysia()
-    .guard({
-        body: t.Object({
-            clerk_id: t.String()
-        })
-    })
     .post("/", async ({store, set, body: {clerk_id}}) => {
             // @ts-ignore
 
@@ -59,11 +54,12 @@ const createController = new Elysia()
                     error: error,
                 };
             }
-        },
-        {
-            detail: {
-                tags: ['User']
-            }
-        });
+        },{
+        body: t.Object({
+            clerk_id: t.String()
+        }), detail: {
+            tags: ['User']
+        }
+    });
 
 export default createController;
