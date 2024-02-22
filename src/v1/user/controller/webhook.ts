@@ -3,7 +3,7 @@ import {Webhook} from "svix";
 import {prisma} from "../../../libs/prisma";
 import {UserSubscription} from "@prisma/client";
 
-type EventType = "user.created" | "user.deleted";
+type EventType = "user.created" | "user.deleted" | "user.updated";
 
 type Event = {
     data: Record<string, string | number>;
@@ -23,11 +23,8 @@ const webhook = new Elysia()
             return request.text();
         }
     })
-    .guard({
-        body: t.String()
-    })
-    .post("/webhooks/auth", async ({headers, body}) => {
-
+    .post("/webhooks/auth", async ({headers, body }) =>
+        {
             // Get the body
             const payload: string = body;
 
@@ -75,6 +72,9 @@ const webhook = new Elysia()
                 case "user.created":
                     await createUser(clerk_id);
                     break;
+                case "user.updated":
+                    await updateUser(clerk_id);
+                    break;
                 case "user.deleted":
                     await deleteUser(clerk_id);
                     break;
@@ -87,17 +87,13 @@ const webhook = new Elysia()
                 success: true,
                 message: "Webhook received"
             }
-        },
-        {
-            detail: {
-                tags: ["User Webhook"]
-            }
+        },{
+            body: t.String()
         });
 
 export default webhook;
 
 async function createUser(clerk_id: string): Promise<void> {
-    // Create user
     await prisma.user.create({
         data: {
             clerk_id,
@@ -111,18 +107,40 @@ async function createUser(clerk_id: string): Promise<void> {
     });
 }
 
-async function deleteUser(clerk_id: string): Promise<void> {
-    // Delete all focus sessions from user
-    await prisma.focusSession.deleteMany({
-        where: {
-            user_id: clerk_id,
-        },
-    });
-
-    // Delete user
-    await prisma.user.delete({
+async function updateUser(clerk_id: string, ): Promise<void> {
+    const existingUser = await prisma.user.findUnique({
         where: {
             clerk_id,
         },
     });
+
+    if(!existingUser){
+        await prisma.user.create({
+            data: {
+                clerk_id,
+                focuscoins: 0,
+                total_generated_coins: 0,
+                total_completed_sessions: 0,
+                subscription: UserSubscription.STARTER,
+                current_focus_session_id: "",
+                focus_sessions: {}
+            },
+        });
+    }
+}
+
+async function deleteUser(clerk_id: string): Promise<void> {
+
+    await prisma.focusSession.deleteMany({
+        where: {
+            user_id: clerk_id,
+        },
+    }).then(() => {
+        prisma.user.delete({
+            where: {
+                clerk_id,
+            },
+        });
+        }
+    );
 }

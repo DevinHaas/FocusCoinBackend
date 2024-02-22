@@ -1,4 +1,4 @@
 
 export enum TimeManagementTechniqueEnum {
-    SIMPLE = "SIMPLE",
+    SIMPLE = "Simple",
 }

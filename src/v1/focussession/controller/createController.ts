@@ -1,24 +1,10 @@
 import {prisma} from "../../../libs/prisma";
 import calculateReward from "../utils/calculateReward";
-import {SessionState} from "@prisma/client";
 import {Elysia, t} from "elysia";
 import {TimeManagementTechniqueEnum} from "../../../enums/TimeManagementTechniqueEnum";
+import {SessionState} from "@prisma/client";
 
 const createController = new Elysia()
-    .guard({
-        body: t.Object({
-            user_id: t.String(),
-            session_settings: t.Object({
-                focusTime: t.Number(),
-                timeManagementTechnique: t.Enum(TimeManagementTechniqueEnum),
-                pauseTime: t.Optional(t.Number()),
-                numberOfSession: t.Optional(t.Number())
-            }),
-            state: t.Enum(SessionState),
-            startedAt: t.Date(),
-            endedAt: t.Optional(t.Date()),
-        })
-    })
     .post("/", async ({store, set, body}) => {
             // @ts-ignore
             if (!store.auth?.userId) {
@@ -73,7 +59,18 @@ const createController = new Elysia()
             }
         },
         {
-            detail: {
+            body: t.Object({
+                user_id: t.String(),
+                session_settings: t.Object({
+                    focusTime: t.Number(),
+                    timeManagementTechnique: t.Enum(TimeManagementTechniqueEnum),
+                    pauseTime: t.Optional(t.Number()),
+                    numberOfSession: t.Optional(t.Number())
+                }),
+                state: t.Enum(SessionState),
+                startedAt: t.String(),
+                endedAt: t.Optional(t.String()),
+            }),detail: {
                 tags: ['Focus-session']
             }
         });
