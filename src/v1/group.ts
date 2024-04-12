@@ -5,8 +5,8 @@ import focusSession from "./focussession";
 import product from "./product";
 
 const v1 = new Elysia({prefix: 'v1'})
-    .use(user)
     .use(focusSession)
     .use(product)
+    .use(user)
 
 export default v1;

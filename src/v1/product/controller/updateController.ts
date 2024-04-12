@@ -3,7 +3,37 @@ import {prisma} from "../../../libs/prisma";
 import {ProductType} from "@prisma/client";
 
 const updateController = new Elysia()
-    .guard({
+    .put("/:id", async ({store, set, params, body}) => {
+        // @ts-ignore
+        if (!store.auth?.userId) {
+            set.status = 403
+            return 'Unauthorized'
+        }
+        try {
+            const updatedProduct = await prisma.product.update({
+                where: {
+                    id: params.id,
+                },
+                data: body,
+            });
+
+            return {
+                success: true,
+                message: "Update product by ID",
+                data: {
+                    product: updatedProduct,
+                },
+            };
+        } catch (error) {
+            console.error("Error updating product:", error);
+            return {
+                status: 500,
+                success: false,
+                message: "Error updating product",
+                error: error,
+            };
+        }
+    }, {
         body: t.Object({
             price_coins: t.Number(),
             title: t.String(),
@@ -16,43 +46,9 @@ const updateController = new Elysia()
             publishedAt: t.Date(),
             expiresAt: t.Date(),
             amount: t.Number(),
-        })
-    })
-    .put("/:id", async ({store, set, params, body}) => {
-            // @ts-ignore
-            if (!store.auth?.userId) {
-                set.status = 403
-                return 'Unauthorized'
-            }
-            try {
-                const updatedProduct = await prisma.product.update({
-                    where: {
-                        id: params.id,
-                    },
-                    data: body,
-                });
-
-                return {
-                    success: true,
-                    message: "Update product by ID",
-                    data: {
-                        product: updatedProduct,
-                    },
-                };
-            } catch (error) {
-                console.error("Error updating product:", error);
-                return {
-                    status: 500,
-                    success: false,
-                    message: "Error updating product",
-                    error: error,
-                };
-            }
-        },
-        {
-            detail: {
-                tags: ['Product']
-            }
-        });
+        }), detail: {
+            tags: ['Product']
+        }
+    });
 
 export default updateController;
