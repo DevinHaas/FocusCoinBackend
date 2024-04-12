@@ -20,7 +20,7 @@ console.log("");
 const app = new Elysia()
     // @ts-ignore
     .use(swagger({
-        path: "/v1/swagger",
+        path: "/swagger",
         documentation: {
             info: {
                 title: 'FocusCoin API Documentation',
