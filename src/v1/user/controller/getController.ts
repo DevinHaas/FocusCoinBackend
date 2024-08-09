@@ -4,11 +4,14 @@ import {prisma} from "../../../libs/prisma";
 const getController = new Elysia()
     .get("/:clerk_id", async ({store, set, params: {clerk_id}}) => {
             // @ts-ignore
+
             if (!store.auth?.userId) {
                 set.status = 403
                 return 'Unauthorized'
             }
             try {
+
+
                 const user = await prisma.user.findUnique({
                     where: {
                         clerk_id,
