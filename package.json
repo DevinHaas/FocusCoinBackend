@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@elysiajs/swagger": "^0.8.5",
-    "@prisma/client": "^5.9.1",
+    "@prisma/client": "^5.12.1",
     "chalk": "^5.3.0",
     "elysia": "^1.0",
     "elysia-clerk": "^0.4.0",
