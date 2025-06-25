@@ -44,6 +44,7 @@ CREATE TABLE "Product" (
     "images_urls" TEXT[],
     "description" TEXT NOT NULL,
     "reference_link" TEXT NOT NULL,
+    "codes" TEXT[],
     "publishedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "expiresAt" TIMESTAMP(3) NOT NULL,
     "amount" INTEGER NOT NULL,

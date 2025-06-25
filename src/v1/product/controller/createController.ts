@@ -66,6 +66,7 @@ const createController = new Elysia()
             ),
             description: t.String(),
             reference_link: t.String(),
+            codes : t.Array(t.String()),
             publishedAt: t.Date(),
             expiresAt: t.Date(),
             amount: t.Number(),

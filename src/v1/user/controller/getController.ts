@@ -2,20 +2,31 @@ import {Elysia} from "elysia";
 import {prisma} from "../../../libs/prisma";
 
 const getController = new Elysia()
-    .get("/:clerk_id", async ({store, set, params: {clerk_id}}) => {
-            // @ts-ignore
+    .get("/", async (ctx) => {
 
-            if (!store.auth?.userId) {
-                set.status = 403
-                return 'Unauthorized'
+            // @ts-ignore
+            const auth = ctx.auth()
+            if (!auth?.userId) {
+                console.log("unauthorized")
+                ctx.status(401)
+                return {
+                    success: false,
+                    message: "Unauthorized"
+                }
             }
             try {
 
 
+
                 const user = await prisma.user.findUnique({
                     where: {
-                        clerk_id,
+                        clerk_id: auth?.userId,
                     },
+                    select: {
+                        focuscoins: true,
+                        total_completed_sessions: true,
+                        total_generated_coins: true,
+                    }
                 });
 
                 if (!user) {
@@ -29,7 +40,7 @@ const getController = new Elysia()
                 return {
                     success: true,
                     message: "Fetch user by ID",
-                    user,
+                    data:user,
 
                 };
             } catch (error) {

@@ -65,6 +65,7 @@ model Product {
   images_urls String[]
   description String
   reference_link String
+  codes String[]
   publishedAt DateTime @default(now())
   expiresAt DateTime
   amount Int

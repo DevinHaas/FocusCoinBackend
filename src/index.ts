@@ -18,7 +18,7 @@ console.log(chalk.blue(`FocusCoin API | https://focuscoinapp.com/ | Version: ${p
 console.log("");
 
 const app = new Elysia()
-    // @ts-ignore
+    .use(clerkPlugin())
     .use(swagger({
         path: "/swagger",
         documentation: {
@@ -38,7 +38,6 @@ const app = new Elysia()
             tags: ['App']
         }
     })
-    .use(clerkPlugin())
     .use(v1)
     .listen(3000);
 

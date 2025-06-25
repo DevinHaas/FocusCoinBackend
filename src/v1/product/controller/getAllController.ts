@@ -1,21 +1,34 @@
-import {Elysia, t} from "elysia";
+import {Elysia} from "elysia";
 import {prisma} from "../../../libs/prisma";
-import {
-    ProductType
-} from "@prisma/client";
-import products from "../index";
 
 const getAllController = new Elysia()
-    .get("/", async ({store, set, params}) => {
-            // @ts-ignore
+    .get("/", async (ctx) => {
 
-            if (!store.auth?.userId) {
-                set.status = 403
-                return 'Unauthorized'
+
+            // @ts-ignore
+            const auth = ctx.auth()
+            if (!auth?.userId) {
+                console.log("unauthorized")
+                ctx.status(401)
+                return {
+                    success: false,
+                    message: "Unauthorized"
+                }
             }
 
+
             try {
-                const products = await prisma.product.findMany()
+
+                const products = await prisma.product.findMany({
+                    where: {
+                        amount: {
+                            gte : 1
+                        },
+                        codes: {
+                            isEmpty: false
+                        },
+                    }
+                })
 
                 if (!products) {
                     return {
@@ -29,7 +42,7 @@ const getAllController = new Elysia()
                     success: true,
                     message: "Products returned",
                     data: {
-                        product: products,
+                        products,
                     },
                 };
             } catch (error) {
