@@ -58,7 +58,7 @@ try {
       reference_link: "https://zalando.com",
       codes: ["SAVE20NOW", "SAVE40NOW", "TESTCODE10", "TESTCODE20", "TESTCODE30", "TESTCODE40", "TESTCODE50"],
       expiresAt: expireIn30Days,
-      amount: 34,
+      amount: 7,
     },
     {
       price_coins: 200,
@@ -69,19 +69,19 @@ try {
       reference_link: "https://www.fizzen.ch/",
       codes: ["FIZZZENMEGA", "SONICE"],
       expiresAt: expireIn30Days,
-      amount: 30,
+      amount: 2,
     },
     {
       price_coins: 15,
-      title: "Galaxus",
+      title: "Galaxus 10Fr.- Giftcard",
       type: ProductType.DISCOUNT,
-      images_urls: ["https://placehold.co/600x400?text=Boost+Pack"],
+      images_urls: ["https://3nheyjgo3z.ufs.sh/f/02NjhvLLFoqlx5zcSjak6X9eIJvlmNpSrC4HiRfubYhGqPOy", "https://3nheyjgo3z.ufs.sh/f/02NjhvLLFoqlQEOmRfJ8qMvBzWHLCeZYyEtD1hps7icrmPSU"],
       description:
-        "Get an extra 15 minutes of focus time and a special digital badge.",
+        "Do you need a new electrical tool or something new for your home? Galaxus got your back.",
       reference_link: "https://example.com/redeem/boost",
-      codes: ["BOOST15MIN"],
+      codes: ["BOOSTPACK10", "BOOSTPACK20", "BOOSTPACK20"],
       expiresAt: expireIn30Days,
-      amount: 25,
+      amount: 3,
     },
   ];
 
