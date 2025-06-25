@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TimeManagementTechniqueEnum {
+  SIMPLE
+}
+
+
+enum UserSubscription {
+  STARTER
+  PREMIUM
+}
+
+enum SessionState {
+  WAITING
+  RUNNING
+  PAUSED
+  CANCELLED
+  PENDING
+  COMPLETED
+}
+
+enum ProductType{
+  DISCOUNT
+}
+
+model User {
+  id                       String           @id @default(uuid()) @db.Uuid
+  clerk_id                 String           @unique
+  focuscoins               Int
+  total_generated_coins    Int
+  total_completed_sessions Int
+  subscription             UserSubscription @default(STARTER)
+  current_focus_session_id String
+  focus_sessions           FocusSession[]   @relation(name: "UserFocusSessions")
+}
+
+model FocusSession {
+  id               String       @id @default(uuid()) @db.Uuid
+  user             User         @relation(fields: [user_id], references: [clerk_id], name: "UserFocusSessions")
+  user_id          String
+  session_settings Json
+  reward           Int
+  state            SessionState
+  startedAt        DateTime
+  endedAt          DateTime?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+model Product {
+  id String @id @default(uuid()) @db.Uuid
+  price_coins Int
+  title String
+  type ProductType @default(DISCOUNT)
+  images_urls String[]
+  description String
+  reference_link String
+  codes String[]
+  publishedAt DateTime @default(now())
+  expiresAt DateTime
+  amount Int
+}
