@@ -2,6 +2,7 @@ import {Elysia, t} from "elysia";
 import {Webhook} from "svix";
 import {prisma} from "../../../libs/prisma";
 import {UserSubscription} from "@prisma/client";
+import {Logestic} from "logestic";
 
 type EventType = "user.created" | "user.deleted" | "user.updated" | "session.created";
 
@@ -23,16 +24,21 @@ const webhook = new Elysia()
             return request.text();
         }
     })
-    .post("/webhooks/auth", async ({headers, body}) => {
+    .post("/webhooks/auth", async (ctx) => {
+
+        // @ts-ignore
+        const logestic = ctx.logestic;
+        logestic.info("Webhook auth endpoint called");
         // Get the body
-        const payload: string = body;
+        const payload: string = ctx.body;
 
         // Get the Svix values from the header
-        const svixId = headers["svix-id"] as string;
-        const svixTimestamp = headers["svix-timestamp"] as string;
-        const svixSignature = headers["svix-signature"] as string;
+        const svixId =  ctx.headers["svix-id"] as string;
+        const svixTimestamp = ctx.headers["svix-timestamp"] as string;
+        const svixSignature = ctx.headers["svix-signature"] as string;
 
         if (!svixId || !svixTimestamp || !svixSignature) {
+            logestic.warn("Missing Svix headers");
             return {
                 status: 400,
                 success: false,
@@ -52,7 +58,9 @@ const webhook = new Elysia()
                 "svix-timestamp": svixTimestamp,
                 "svix-signature": svixSignature,
             }) as Event;
+            logestic.info("Webhook payload verified successfully");
         } catch (err: any) {
+            logestic.error("Webhook verification failed", { error: err.message });
             return {
                 status: 400,
                 success: false,
@@ -70,21 +78,15 @@ const webhook = new Elysia()
         // Perform actions based on event type
         switch (eventType) {
             case "user.created":
-                await createUser(clerk_id);
+                await createUser(clerk_id, logestic);
                 break;
             case "session.created":
-                await createUser(clerk_id_for_session);
-                break;
-            case "user.updated":
-                await updateUser(clerk_id);
-                break;
-            case "user.deleted":
-                await deleteUser(clerk_id);
+                await createUser(clerk_id_for_session, logestic);
                 break;
             default:
-                console.log("Unhandled event type:", eventType);
+                logestic.warn("Unhandled event type", { eventType });
         }
-
+        logestic.info("Webhook processed successfully");
         return {
             status: 200,
             success: true,
@@ -96,7 +98,7 @@ const webhook = new Elysia()
 
 export default webhook;
 
-async function createUser(clerk_id: string): Promise<void> {
+async function createUser(clerk_id: string, logestic: any): Promise<void> {
 
 
     const existingUser = await prisma.user.findUnique({
@@ -106,6 +108,7 @@ async function createUser(clerk_id: string): Promise<void> {
     });
 
     if (!existingUser) {
+        logestic.info("Creating new user from webhook", { clerk_id });
         await prisma.user.create({
             data: {
                 clerk_id,
@@ -117,37 +120,13 @@ async function createUser(clerk_id: string): Promise<void> {
                 focus_sessions: {}
             },
         });
+    } else {
+        logestic.info("User already exists, skipping creation", { clerk_id });
     }
 
 
 }
 
-async function updateUser(clerk_id: string,): Promise<void> {
-
-    const existingUser = await prisma.user.findUnique({
-        where: {
-            clerk_id: clerk_id,
-        },
-    });
-
-    if (!existingUser) {
-        await createUser(clerk_id);
-    }
-}
-
-async function deleteUser(clerk_id: string): Promise<void> {
 
 
-    await prisma.focusSession.deleteMany({
-        where: {
-            user_id: clerk_id,
-        },
-    }).then(async () => {
-            await prisma.user.delete({
-                where: {
-                    clerk_id: clerk_id
-                }
-            });
-        }
-    );
-}
+
