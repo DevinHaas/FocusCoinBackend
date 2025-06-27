@@ -73,7 +73,7 @@ const webhook = new Elysia()
 
         // Get the users ID from clerk
         const clerk_id = evt.data.id as string;
-        const clerk_id_for_session = evt.data.client_id as string;
+        const clerk_id_for_session = evt.data.user_id as string;
 
         // Perform actions based on event type
         switch (eventType) {
