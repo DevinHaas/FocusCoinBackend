@@ -6,12 +6,14 @@ import user from "../index";
 const rewardController = new Elysia()
     .post("/rewards/claim", async (ctx) => {
 
-            console.log("claim called")
+            // @ts-ignore
+            const logestic  = ctx.logestic
+            logestic.info("Reward claim endpoint called");
             // @ts-ignore
             const auth = ctx.auth()
             const userId = auth.userId
             if (!auth?.userId) {
-                console.log("unauthorized")
+                logestic.warn("Unauthorized access to reward claim endpoint", { userId: userId });
                 ctx.status(403)
                 return 'Unauthorized'
             }
@@ -21,8 +23,6 @@ const rewardController = new Elysia()
                         clerk_id: userId
                     },
                 });
-                console.log(existingUser)
-                console.log(ctx.body.reward)
 
                 if (existingUser) {
                     const updatedUser = await prisma.user.update({
@@ -35,7 +35,7 @@ const rewardController = new Elysia()
                             }
                         },
                     });
-
+                    logestic.info("User updated successfully with reward", { userId: userId, reward: ctx.body.reward });
                     return {
                         success: true,
                         message: "Reward was paid",
@@ -43,6 +43,7 @@ const rewardController = new Elysia()
                     };
 
                 } else {
+                    logestic.warn("User not found for reward claim", { userId: userId });
                     return {
                         status: 400,
                         success: false,
@@ -51,6 +52,7 @@ const rewardController = new Elysia()
                 }
 
             } catch (error) {
+                logestic.error("Error during reward claim process", { error, userId: userId })
                 return {
                     status: 500,
                     success: false,

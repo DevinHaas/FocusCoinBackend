@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import v1 from "./v1/group";
 import {clerkPlugin} from "elysia-clerk";
+import {Logestic} from "logestic";
 
 const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
@@ -19,6 +20,7 @@ console.log("");
 
 const app = new Elysia()
     .use(clerkPlugin())
+    .use(Logestic.preset('fancy'))
     .use(swagger({
         path: "/swagger",
         documentation: {

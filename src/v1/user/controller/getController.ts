@@ -4,10 +4,18 @@ import {prisma} from "../../../libs/prisma";
 const getController = new Elysia()
     .get("/", async (ctx) => {
 
+
+
+
+            // @ts-ignore
+            const logestic  = ctx.logestic
+
+            logestic.info("called")
+            console.log("called")
             // @ts-ignore
             const auth = ctx.auth()
             if (!auth?.userId) {
-                console.log("unauthorized")
+                logestic.warn("Not authorized to get user")
                 ctx.status(401)
                 return {
                     success: false,
@@ -30,13 +38,17 @@ const getController = new Elysia()
                 });
 
                 if (!user) {
+
+                    logestic.warn("No user was found")
+                    ctx.status(404)
                     return {
-                        status: 404,
                         success: false,
                         message: "User not found",
                     };
                 }
 
+
+                logestic.info("Fetched user successfully")
                 return {
                     success: true,
                     message: "Fetch user by ID",
@@ -44,9 +56,9 @@ const getController = new Elysia()
 
                 };
             } catch (error) {
-                console.error("Error fetching user:", error);
+                logestic.error( "Error fetching user:", error)
+                ctx.status(500)
                 return {
-                    status: 500,
                     success: false,
                     message: "Internal Server Error",
                 };
