@@ -96,13 +96,6 @@ async function buyProductFromDB(productId: string, userId: string, logestic: any
                 focuscoins: { decrement: product.price_coins }
             }
         });
-        await tx.product.update({
-            where: { id: productId },
-            data: {
-                codes: newCodes,
-                amount: { decrement: 1 },
-            },
-        });
         return code;
     });
 }
