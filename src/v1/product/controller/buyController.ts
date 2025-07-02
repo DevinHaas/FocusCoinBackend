@@ -72,7 +72,7 @@ async function buyProductFromDB(productId: string, userId: string, logestic: any
         }
         const product = await tx.product.findUnique({
             where: { id: productId },
-            select: { amount: true, codes: true },
+            select: { amount: true, codes: true, price_coins: true },
         });
         if (!product) {
             logestic.warn(`Product not found`, { productId });
@@ -93,7 +93,7 @@ async function buyProductFromDB(productId: string, userId: string, logestic: any
         await tx.user.update({
             where: { id: user.id },
             data: {
-                focuscoins: { decrement: product.amount }
+                focuscoins: { decrement: product.price_coins }
             }
         });
         await tx.product.update({

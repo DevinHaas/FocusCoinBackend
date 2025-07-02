@@ -9,9 +9,6 @@ const getController = new Elysia()
 
             // @ts-ignore
             const logestic  = ctx.logestic
-
-            logestic.info("called")
-            console.log("called")
             // @ts-ignore
             const auth = ctx.auth()
             if (!auth?.userId) {
@@ -39,7 +36,7 @@ const getController = new Elysia()
 
                 if (!user) {
 
-                    logestic.warn("No user was found")
+                    logestic.warn(`No user was found with clerk_id: ${auth?.userId}`)
                     ctx.status(404)
                     return {
                         success: false,
@@ -48,7 +45,7 @@ const getController = new Elysia()
                 }
 
 
-                logestic.info("Fetched user successfully")
+                logestic.info(`Fetched user successfully with clerk_id: ${auth?.userId}`)
                 return {
                     success: true,
                     message: "Fetch user by ID",
@@ -56,7 +53,7 @@ const getController = new Elysia()
 
                 };
             } catch (error) {
-                logestic.error( "Error fetching user:", error)
+                logestic.error( `Error fetching user: ${error}`)
                 ctx.status(500)
                 return {
                     success: false,

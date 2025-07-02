@@ -1,19 +1,17 @@
 import {Elysia, t} from "elysia";
 import {prisma} from "../../../libs/prisma";
-import {UserSubscription} from "@prisma/client";
-import user from "../index";
 
 const rewardController = new Elysia()
     .post("/rewards/claim", async (ctx) => {
 
             // @ts-ignore
-            const logestic  = ctx.logestic
+            const logestic = ctx.logestic
             logestic.info("Reward claim endpoint called");
             // @ts-ignore
             const auth = ctx.auth()
             const userId = auth.userId
             if (!auth?.userId) {
-                logestic.warn("Unauthorized access to reward claim endpoint", { userId: userId });
+                logestic.warn("Unauthorized access to reward claim endpoint", {userId: userId});
                 ctx.status(403)
                 return 'Unauthorized'
             }
@@ -30,12 +28,12 @@ const rewardController = new Elysia()
                             clerk_id: userId
                         },
                         data: {
-                            focuscoins : {
+                            focuscoins: {
                                 increment: ctx.body.reward
                             }
                         },
                     });
-                    logestic.info("User updated successfully with reward", { userId: userId, reward: ctx.body.reward });
+                    logestic.info(`User updated successfully with userId ${userId}, reward: ${ctx.body.reward}`);
                     return {
                         success: true,
                         message: "Reward was paid",
@@ -43,7 +41,7 @@ const rewardController = new Elysia()
                     };
 
                 } else {
-                    logestic.warn("User not found for reward claim", { userId: userId });
+                    logestic.warn(`User not found for reward claim userId ${userId} `);
                     return {
                         status: 400,
                         success: false,
@@ -52,7 +50,7 @@ const rewardController = new Elysia()
                 }
 
             } catch (error) {
-                logestic.error("Error during reward claim process", { error, userId: userId })
+                logestic.error(`Error during reward claim process error: ${error}`)
                 return {
                     status: 500,
                     success: false,
