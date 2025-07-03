@@ -30,6 +30,12 @@ const rewardController = new Elysia()
                         data: {
                             focuscoins: {
                                 increment: ctx.body.reward
+                            },
+                            total_generated_coins : {
+                                increment: ctx.body.reward
+                            },
+                            total_completed_sessions: {
+                                increment: 1
                             }
                         },
                     });
